@@ -1,0 +1,425 @@
+import demoEn from "./demo-en" // @demo remove-current-line
+
+const en = {
+  common: {
+    ok: "OK!",
+    cancel: "Cancel",
+    back: "Back",
+    logOut: "Log Out", // @demo remove-current-line
+  },
+  welcomeScreen: {
+    postscript:
+      "psst  — This probably isn't what your app looks like. (Unless your designer handed you these screens, and in that case, ship it!)",
+    readyForLaunch: "Your app, almost ready for launch!",
+    exciting: "(ohh, this is exciting!)",
+    letsGo: "Let's go!", // @demo remove-current-line
+  },
+  errorScreen: {
+    title: "Something went wrong!",
+    friendlySubtitle:
+      "This is the screen that your users will see in production when an error is thrown. You'll want to customize this message (located in `app/i18n/en.ts`) and probably the layout as well (`app/screens/ErrorScreen`). If you want to remove this entirely, check `app/app.tsx` for the <ErrorBoundary> component.",
+    reset: "RESET APP",
+    traceTitle: "Error from %{name} stack", // @demo remove-current-line
+  },
+  emptyStateComponent: {
+    generic: {
+      heading: "So empty... so sad",
+      content: "No data found yet. Try clicking the button to refresh or reload the app.",
+      button: "Let's try this again",
+    },
+  },
+  deleteAccountModal: {
+    title: "Delete Account",
+    subtitle: "This action cannot be undone.",
+    infoProfile: "We will remove your profile data, preferences, and stored settings.",
+    infoSubscriptions: "Active subscriptions will be disconnected from your account.",
+    infoSignOut: "You will be signed out on all devices.",
+    confirmLabel: "I understand this is permanent",
+    confirmHint: "You'll need to create a new account to return.",
+    cancelButton: "Cancel",
+    deleteButton: "Delete my account",
+    errorGeneric: "Unable to delete your account right now.",
+    errorNoUser: "No active user to delete.",
+  },
+  editProfileModal: {
+    title: "Edit Profile",
+    firstNameLabel: "First Name",
+    firstNamePlaceholder: "Enter your first name",
+    lastNameLabel: "Last Name",
+    lastNamePlaceholder: "Enter your last name",
+    cancelButton: "Cancel",
+    saveButton: "Save",
+    errorGeneric: "Failed to update profile",
+  },
+  pricingCard: {
+    mostPopular: "MOST POPULAR",
+    processing: "Processing...",
+    subscribeNow: "Subscribe Now",
+  },
+  subscriptionStatus: {
+    freePlan: "Free Plan",
+    upgradeMessage: "Upgrade to Pro to unlock all features",
+    proMember: "Pro Member",
+    subscribedVia: "Subscribed via {{platform}}",
+    renews: "Renews",
+    expires: "Expires",
+    on: "on",
+    manage: "Manage",
+    platformAppStore: "App Store",
+    platformGooglePlay: "Google Play",
+    platformWebBilling: "Web Billing",
+    platformMock: "Mock (Development)",
+    platformUnknown: "Unknown",
+  },
+  homeScreen: {
+    goodMorning: "Good morning,",
+    dailyChallenge: "Daily Challenge",
+    featuredTitle: "Meditate for 10 mins",
+    featuredSubtitle: "Clear your mind and start fresh.",
+    startNow: "Start Now",
+    statStreak: "Streak",
+    statCompleted: "Completed",
+    statRating: "Rating",
+    explore: "Explore",
+    uiComponents: "UI Components",
+    uiComponentsDescription: "View all pre-built components",
+    myProfile: "My Profile",
+    myProfileDescription: "Manage account and settings",
+    premiumFeatures: "Premium Features",
+    premiumFeaturesDescription: "Upgrade to unlock more",
+  },
+  paywallScreen: {
+    welcomeTitle: "Welcome to Pro! 🎉",
+    welcomeDescription: "You're all set. Enjoy all premium features!",
+    loadingPaywall: "Loading paywall...",
+    upgradeTitle: "Upgrade to Pro",
+    upgradeDescription: "Unlock all features and remove limits.",
+    mockWebDescription:
+      "Mock checkout is enabled because no RevenueCat Web key is set. Add a key to use real billing.",
+    mockNativeDescription:
+      "Mock mode is enabled because no RevenueCat API keys are set. Add keys to use real billing.",
+    secureCheckoutDescription: "Secure checkout is handled by RevenueCat.",
+    noWebOfferingError:
+      "No web offering found. Add a Web Billing offering in RevenueCat and try again.",
+    noPackagesError: "No packages available. Configure RevenueCat or add API keys.",
+    sdkUnavailableError: "RevenueCat SDK not available on this platform.",
+    noOfferingError: "No offering available. Please configure an offering in RevenueCat dashboard.",
+    loadFailed: "Failed to load paywall. Please try again.",
+    purchaseFailed: "Payment failed. Please try again.",
+    processing: "Processing...",
+    selectPlan: "Select plan",
+    continueWithFree: "Continue with Free",
+    unableToLoadTitle: "Unable to Load Paywall",
+    tryAgain: "Try Again",
+    viewPlans: "View Plans",
+  },
+  badge: {
+    // Badge text is typically dynamic, but we can add common ones if needed
+  },
+  tabs: {
+    home: "Home",
+    components: "Components",
+    pro: "Pro",
+    profile: "Profile",
+  },
+  authScreenLayout: {
+    closeButton: "Close",
+    backButton: "Go back",
+  },
+  authCallbackScreen: {
+    invalidParams: "Invalid auth callback parameters.",
+    loadingMessage: "Signing you in...",
+    loadingStatus: "Finalizing your session.",
+    errorTitle: "We couldn't finish signing you in",
+    backToLogin: "Back to Login",
+  },
+  resetPasswordScreen: {
+    missingToken: "Missing reset token. Please request a new reset link.",
+    verifyingTitle: "Securing your reset link...",
+    verifyingSubtitle: "One moment while we verify your request.",
+    successTitle: "Password updated",
+    successSubtitle: "You can now sign in with your new password.",
+    backToLogin: "Back to Login",
+    title: "Reset your password",
+    subtitle: "Choose a new password for your account.",
+    passwordLabel: "New password",
+    passwordPlaceholder: "Create a new password",
+    confirmLabel: "Confirm password",
+    confirmPlaceholder: "Re-enter your password",
+    submit: "Update Password",
+  },
+  onboardingScreenLayout: {
+    // Title and subtitle are typically passed as props
+  },
+  settings: {
+    language: "Language",
+    languageAutoDetect: "Language is automatically detected from your device settings",
+  },
+  profileScreen: {
+    title: "Profile",
+    upgradeButton: "Upgrade to Pro",
+    proBadge: "PRO",
+    // Settings section
+    settingsTitle: "Settings",
+    personalInfo: "Personal Information",
+    personalInfoSubtitle: "Edit name, email",
+    notifications: "Notifications",
+    notificationsSubtitle: "Manage push notifications",
+    darkMode: "Dark Mode",
+    languageSubtitle: "Change app language",
+    widgets: "Home Screen Widgets",
+    widgetsEnabled: "Enabled - add widgets from home screen",
+    widgetsDisabled: "Show app data on your home screen",
+    widgetsSyncing: "Syncing...",
+    // Support section
+    supportTitle: "Support",
+    helpCenter: "Help Center",
+    privacyPolicy: "Privacy Policy",
+    // Development section
+    developmentTitle: "Development",
+    testSentryError: "Test Sentry Error",
+    testSentryErrorSubtitle: "Send a test error to Sentry",
+    testWarning: "Test Warning",
+    testWarningSubtitle: "Send a test warning message",
+    testInfoMessage: "Test Info Message",
+    testInfoMessageSubtitle: "Send a test info message",
+    testErrorWithContext: "Test Error with Context",
+    testErrorWithContextSubtitle: "Send error with additional context",
+    // Account section
+    accountTitle: "Account",
+    signOut: "Sign Out",
+    signOutSubtitle: "Log out of this device",
+    deleteAccount: "Delete Account",
+    deleteAccountSubtitle: "Permanently remove your data and sign out from all devices.",
+    deleteAccountPrivacy: "Privacy-first",
+    deleteAccountBullet1: "Removes your profile and preferences",
+    deleteAccountBullet2: "Ends your active subscription",
+    deleteAccountBullet3: "Signs you out on every device",
+    deleteMyAccount: "Delete my account",
+    version: "Version {{version}} (Build {{build}})",
+  },
+  registerScreen: {
+    title: "Create Account",
+    subtitle: "Sign up to get started",
+    emailLabel: "Email",
+    emailPlaceholder: "Enter your email",
+    passwordLabel: "Password",
+    passwordPlaceholder: "Enter your password",
+    confirmPasswordLabel: "Confirm Password",
+    confirmPasswordPlaceholder: "Confirm your password",
+    signUp: "Sign Up",
+    orContinueWith: "or continue with",
+    apple: "Apple",
+    google: "Google",
+    hasAccount: "Already have an account?",
+    logIn: "Log In",
+    appleSignInFailed: "Failed to sign in with Apple",
+    googleSignInFailed: "Failed to sign in with Google",
+    // Password strength
+    passwordStrength: {
+      weak: "Weak",
+      fair: "Fair",
+      good: "Good",
+      strong: "Strong",
+    },
+  },
+  forgotPasswordScreen: {
+    title: "Forgot Password?",
+    subtitle: "No worries! Enter your email and we'll send you reset instructions.",
+    emailLabel: "Email",
+    emailPlaceholder: "Enter your email",
+    sendResetLink: "Send Reset Link",
+    sending: "Sending...",
+    rememberPassword: "Remember your password?",
+    backToLogin: "Back to Login",
+    // Success state
+    successTitle: "Check Your Email",
+    successSubtitle: "We've sent a password reset link to {{email}}",
+    successDescription:
+      "Click the link in the email to reset your password. If you don't see it, check your spam folder.",
+  },
+  emailVerificationScreen: {
+    title: "Verify Your Email",
+    subtitle: "We've sent a confirmation email to {{email}}",
+    checkInbox: "Check your inbox",
+    description:
+      "We've sent a confirmation link to {{email}}. Click the link in the email to verify your account.",
+    checkingStatus: "Checking verification status...",
+    resendSuccess: "Confirmation email sent! Please check your inbox.",
+    resendError: "Failed to resend email. Please try again.",
+    unexpectedError: "An unexpected error occurred. Please try again.",
+    resendEmail: "Resend Email",
+    resendIn: "Resend in {{seconds}}s",
+    wrongEmail: "Wrong email?",
+    changeIt: "Change it",
+    alreadyConfirmed: "Already confirmed?",
+    signIn: "Sign In",
+  },
+  // OTP Input Component
+  otpInput: {
+    digitLabel: "Digit {{position}} of {{total}}",
+    digitHint: "Enter a single digit",
+    pasteFromClipboard: "Paste code from clipboard",
+  },
+  // Magic Link Screen (Passwordless Auth)
+  magicLinkScreen: {
+    title: "Sign In with Email",
+    subtitle: "No password needed. We'll send you a code.",
+    emailLabel: "Email",
+    emailPlaceholder: "Enter your email address",
+    sendCode: "Send Code",
+    infoText:
+      "We'll send a verification code to your email. Enter the code on the next screen to sign in.",
+    preferPassword: "Prefer using a password?",
+    signInWithPassword: "Sign in with password",
+    unexpectedError: "An unexpected error occurred. Please try again.",
+  },
+  // OTP Verification Screen
+  otpVerificationScreen: {
+    title: "Enter Code",
+    subtitle: "We sent a code to {{email}}",
+    instructions: "Enter the {{length}}-digit code we sent to your email.",
+    verifying: "Verifying code...",
+    resendSuccess: "New code sent! Check your inbox.",
+    resendCode: "Resend Code",
+    resendIn: "Resend in {{seconds}}s",
+    wrongEmail: "Wrong email?",
+    changeIt: "Change it",
+    preferPassword: "Prefer using a password?",
+    signInWithPassword: "Sign in with password",
+    unexpectedError: "An unexpected error occurred. Please try again.",
+    invalidCode: "Invalid code. Please check and try again.",
+    expiredCode: "This code has expired. Please request a new one.",
+    convexInstructions: "For Convex, use the useAuthActions() hook to verify the code.",
+    convexResendInstructions: "For Convex, use the useAuthActions() hook to resend the code.",
+  },
+  onboardingScreen: {
+    // Step 0: Welcome
+    welcomeTitle: "Welcome Aboard!",
+    welcomeSubtitle:
+      "We're excited to help you build your next great app. Let's get you set up in just a few seconds.",
+    letsGo: "Let's Go",
+    // Step 1: Goals
+    goalsTitle: "Your Goal",
+    goalsSubtitle: "What's your main focus today? This helps us personalize your experience.",
+    goalBuildApp: "Build an App",
+    goalLearnReactNative: "Learn React Native",
+    goalJustExploring: "Just Exploring",
+    // Step 2: Notifications
+    notificationsTitle: "Stay Updated",
+    notificationsSubtitle:
+      "Enable notifications to get daily updates, tips, and important announcements.",
+    notificationPreviewTitle: "New Feature!",
+    notificationPreviewTime: "Just now",
+    notificationPreviewMessage: "Dark mode is now available. Check it out in settings!",
+    turnOnNotifications: "Turn On Notifications",
+    enabling: "Enabling...",
+    maybeLater: "Maybe Later",
+  },
+  // @demo remove-block-start
+  errors: {
+    invalidEmail: "Invalid email address.",
+  },
+  loginScreen: {
+    title: "Welcome Back",
+    subtitle: "Sign in to continue",
+    emailLabel: "Email",
+    emailPlaceholder: "Enter your email",
+    passwordLabel: "Password",
+    passwordPlaceholder: "Enter your password",
+    signIn: "Sign In",
+    forgotPassword: "Forgot Password?",
+    signInWithEmail: "Sign in with email code instead",
+    orContinueWith: "or continue with",
+    apple: "Apple",
+    google: "Google",
+    noAccount: "Don't have an account?",
+    signUp: "Sign Up",
+    appleSignInFailed: "Failed to sign in with Apple",
+    googleSignInFailed: "Failed to sign in with Google",
+  },
+  demoNavigator: {
+    componentsTab: "Components",
+    debugTab: "Debug",
+    communityTab: "Community",
+    podcastListTab: "Podcast",
+  },
+  demoCommunityScreen: {
+    title: "Connect with the community",
+    tagLine:
+      "Plug in to Infinite Red's community of React Native engineers and level up your app development with us!",
+    joinUsOnSlackTitle: "Join us on Slack",
+    joinUsOnSlack:
+      "Wish there was a place to connect with React Native engineers around the world? Join the conversation in the Infinite Red Community Slack! Our growing community is a safe space to ask questions, learn from others, and grow your network.",
+    joinSlackLink: "Join the Slack Community",
+    makeShipnativeEvenBetterTitle: "Help Shipnative get even better",
+    makeShipnativeEvenBetter:
+      "Have an idea to make Shipnative even better? We're happy to hear that! We're always looking for others who want to help us build the best React Native tooling out there. Join us over on GitHub to help build the future of Shipnative.",
+    contributeToShipnativeLink: "Contribute to Shipnative",
+    theLatestInReactNativeTitle: "The latest in React Native",
+    theLatestInReactNative: "We're here to keep you current on all React Native has to offer.",
+    reactNativeRadioLink: "React Native Radio",
+    reactNativeNewsletterLink: "React Native Newsletter",
+    reactNativeLiveLink: "React Native Live",
+    chainReactConferenceLink: "Chain React Conference",
+    hireUsTitle: "Hire Infinite Red for your next project",
+    hireUs:
+      "Whether it's running a full project or getting teams up to speed with our hands-on training, Infinite Red can help with just about any React Native project.",
+    hireUsLink: "Send us a message",
+  },
+  demoShowroomScreen: {
+    jumpStart: "Components to jump start your project!",
+    lorem2Sentences:
+      "Nulla cupidatat deserunt amet quis aliquip nostrud do adipisicing. Adipisicing excepteur elit laborum Lorem adipisicing do duis.",
+    demoHeaderTxExample: "Yay",
+    demoViaTxProp: "Via `tx` Prop",
+    demoViaSpecifiedTxProp: "Via `{{prop}}Tx` Prop",
+  },
+  demoDebugScreen: {
+    howTo: "HOW TO",
+    title: "Debug",
+    tagLine:
+      "Congratulations, you've got a very advanced React Native app template here.  Take advantage of this boilerplate!",
+    reactotron: "Send to Reactotron",
+    reportBugs: "Report Bugs",
+    demoList: "Demo List",
+    demoPodcastList: "Demo Podcast List",
+    androidReactotronHint:
+      "If this doesn't work, ensure the Reactotron desktop app is running, run adb reverse tcp:9090 tcp:9090 from your terminal, and reload the app.",
+    iosReactotronHint:
+      "If this doesn't work, ensure the Reactotron desktop app is running and reload app.",
+    macosReactotronHint:
+      "If this doesn't work, ensure the Reactotron desktop app is running and reload app.",
+    webReactotronHint:
+      "If this doesn't work, ensure the Reactotron desktop app is running and reload app.",
+    windowsReactotronHint:
+      "If this doesn't work, ensure the Reactotron desktop app is running and reload app.",
+  },
+  demoPodcastListScreen: {
+    title: "React Native Radio episodes",
+    onlyFavorites: "Only Show Favorites",
+    favoriteButton: "Favorite",
+    unfavoriteButton: "Unfavorite",
+    accessibility: {
+      cardHint:
+        "Double tap to listen to the episode. Double tap and hold to {{action}} this episode.",
+      switch: "Switch on to only show favorites",
+      favoriteAction: "Toggle Favorite",
+      favoriteIcon: "Episode not favorited",
+      unfavoriteIcon: "Episode favorited",
+      publishLabel: "Published {{date}}",
+      durationLabel: "Duration: {{hours}} hours {{minutes}} minutes {{seconds}} seconds",
+    },
+    noFavoritesEmptyState: {
+      heading: "This looks a bit empty",
+      content:
+        "No favorites have been added yet. Tap the heart on an episode to add it to your favorites!",
+    },
+  },
+  // @demo remove-block-start
+  ...demoEn,
+  // @demo remove-block-end
+}
+
+export default en
+export type Translations = typeof en

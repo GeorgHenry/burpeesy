@@ -1,0 +1,74 @@
+{
+  "name": "react-native-starter-kit",
+  "private": true,
+  "scripts": {
+    "postinstall": "patch-package",
+    "preflight": "node scripts/preflight-check.js",
+    "setup": "tsx --tsconfig tsconfig.setup.json setup.ts",
+    "build": "turbo run build",
+    "dev": "yarn preflight && cd apps/app && EXPO_IOS_SIMULATOR_DEVICE_NAME=D44A1507-3E39-4AA2-9662-F1CC7C832D68 yarn dev",
+    "lint": "turbo run lint",
+    "lint:check": "turbo run lint:check",
+    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
+    "typecheck": "turbo run typecheck",
+    "test": "turbo run test",
+    "web": "yarn marketing:dev",
+    "web:dev": "yarn marketing:dev",
+    "web:build": "yarn marketing:build",
+    "web:preview": "yarn marketing:preview",
+    "web:deploy": "yarn marketing:deploy",
+    "web:mode": "yarn marketing:mode",
+    "marketing:dev": "cd apps/web && yarn dev",
+    "marketing:build": "cd apps/web && yarn build",
+    "marketing:preview": "cd apps/web && yarn preview",
+    "marketing:deploy": "cd apps/web && yarn build",
+    "marketing:mode": "node scripts/set-marketing-mode.js",
+    "marketing:waitlist": "node scripts/set-marketing-mode.js waitlist",
+    "marketing:launch": "node scripts/set-marketing-mode.js launch",
+    "app:dev": "yarn preflight && cd apps/app && yarn dev",
+    "app:web": "yarn preflight && cd apps/app && yarn web",
+    "app:web:build": "cd apps/app && yarn bundle:web",
+    "app:web:preview": "cd apps/app && yarn serve:web",
+    "app:android": "yarn preflight && turbo run android --filter=starter-app",
+    "app:ios": "yarn preflight && turbo run ios --filter=starter-app",
+    "app:start": "yarn preflight && cd apps/app && yarn start",
+    "android": "yarn preflight && cd apps/app && expo run:android",
+    "ios": "yarn preflight && cd apps/app && expo run:ios"
+  },
+  "devDependencies": {
+    "@types/node": "^24.10.1",
+    "@types/react-native": "^0.73.0",
+    "boxen": "^8.0.1",
+    "chalk": "^5.3.0",
+    "inquirer": "^9.2.15",
+    "ora": "^7.0.1",
+    "patch-package": "^8.0.1",
+    "prettier": "^3.3.3",
+    "tsx": "^4.20.3",
+    "turbo": "latest"
+  },
+  "packageManager": "yarn@4.9.1",
+  "volta": {
+    "node": "20.19.0",
+    "yarn": "4.9.1"
+  },
+  "workspaces": [
+    "apps/*"
+  ],
+  "resolutions": {
+    "lightningcss": "1.30.1",
+    "node-forge": "^1.3.2",
+    "react-server-dom-webpack": "^19.2.1"
+  },
+  "version": "1.0.0",
+  "dependencies": {
+    "@auth/core": "~0.37.0",
+    "@convex-dev/auth": "^0.0.90",
+    "convex": "^1.31.4",
+    "expo": "~54.0.25",
+    "expo-clipboard": "~8.0.8",
+    "react": "19.1.0",
+    "react-native": "0.81.5",
+    "resend": "^4.0.0"
+  }
+}

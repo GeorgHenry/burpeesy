@@ -1,0 +1,412 @@
+/**
+ * PostHog Analytics Service
+ *
+ * Handles analytics tracking across web and mobile platforms.
+ * Falls back to mock service when API key is missing or on unsupported platforms.
+ */
+
+import { Platform } from "react-native"
+
+import { env } from "../config/env"
+import type {
+  AnalyticsService,
+  AnalyticsConfig,
+  EventProperties,
+  UserProperties,
+  ScreenProperties,
+  GroupProperties,
+  FeatureFlagValue,
+} from "../types/analytics"
+import { logger } from "../utils/Logger"
+import { MockPostHog } from "./mocks/posthog"
+
+type PostHogClient = {
+  capture: (event: string, properties?: EventProperties) => void
+  screen?: (name: string, properties?: ScreenProperties) => void
+  identify: (userId: string, properties?: UserProperties) => void
+  reset: () => void
+  setPersonProperties: (properties: UserProperties) => void
+  group: (type: string, id: string, properties?: GroupProperties) => void
+  isFeatureEnabled: (flag: string) => boolean
+  getFeatureFlag: (flag: string) => FeatureFlagValue
+  onFeatureFlags?: (callback: (flags: Record<string, FeatureFlagValue>) => void) => void
+  optIn: () => void
+  optOut: () => void
+  flush?: () => Promise<void>
+  shutdown?: () => Promise<void>
+}
+
+type PostHogWebModule = {
+  init?: (
+    apiKey: string,
+    options: {
+      api_host?: string
+      autocapture?: boolean
+      capture_pageview?: boolean
+      loaded?: (posthog: PostHogClient) => void
+    },
+  ) => void
+  capture?: PostHogClient["capture"]
+}
+
+const isPostHogClient = (client: unknown): client is PostHogClient => {
+  if (!client || typeof client !== "object") return false
+  const candidate = client as PostHogClient
+  return (
+    typeof candidate.capture === "function" &&
+    typeof candidate.identify === "function" &&
+    typeof candidate.reset === "function" &&
+    typeof candidate.setPersonProperties === "function" &&
+    typeof candidate.group === "function" &&
+    typeof candidate.isFeatureEnabled === "function" &&
+    typeof candidate.getFeatureFlag === "function" &&
+    typeof candidate.optIn === "function" &&
+    typeof candidate.optOut === "function"
+  )
+}
+
+// PostHog SDKs (platform-specific)
+let PostHogRN: { new (apiKey: string, options?: { host?: string }): PostHogClient } | null = null // React Native
+let PostHogJS: PostHogWebModule | null = null // Web
+let loadPostHogWebPromise: Promise<PostHogWebModule | null> | null = null
+
+// Load React Native SDK eagerly (native only)
+if (Platform.OS !== "web") {
+  try {
+    const module = require("posthog-react-native")
+    PostHogRN = module.default || module.PostHog
+  } catch (error) {
+    if (__DEV__) {
+      console.warn(
+        "Failed to load posthog-react-native. Will use mock if API key is missing.",
+        error,
+      )
+    }
+  }
+}
+
+// Lazy-load PostHog web SDK to keep the initial web bundle lighter
+async function loadPostHogWebSdk(): Promise<PostHogWebModule | null> {
+  if (PostHogJS) return PostHogJS
+  if (loadPostHogWebPromise) return loadPostHogWebPromise
+
+  loadPostHogWebPromise = import("posthog-js")
+    .then((mod) => {
+      const candidate = mod as unknown as PostHogWebModule & { posthog?: PostHogWebModule }
+      PostHogJS = candidate.posthog || candidate
+      return PostHogJS
+    })
+    .catch((error) => {
+      if (__DEV__) {
+        console.warn("Failed to dynamically load posthog-js. Falling back to mock.", error)
+      }
+      return null
+    })
+
+  return loadPostHogWebPromise
+}
+
+const apiKey = env.posthogApiKey || ""
+const host = env.posthogHost || "https://app.posthog.com"
+
+// Use mock if API key is missing in development
+const useMock = __DEV__ && !apiKey
+
+class PostHogService implements AnalyticsService {
+  platform = "posthog" as const
+  private client: PostHogClient | null = null
+  private initialized = false
+
+  async initialize(config?: AnalyticsConfig): Promise<void> {
+    if (this.initialized) return
+
+    const key = config?.apiKey || apiKey
+    const apiHost = config?.host || host
+
+    if (!key) {
+      logger.warn("PostHog API key not provided")
+      return
+    }
+
+    if (Platform.OS === "web") {
+      PostHogJS = await loadPostHogWebSdk()
+    }
+
+    // Log SDK loading errors during initialization (when logger is ready)
+    if (Platform.OS === "web" && !PostHogJS) {
+      logger.error("PostHog web SDK not available. Make sure posthog-js is installed", {})
+      return
+    }
+    if (Platform.OS !== "web" && !PostHogRN) {
+      logger.error(
+        "PostHog React Native SDK not available. Make sure posthog-react-native is installed",
+        {},
+      )
+      return
+    }
+
+    try {
+      if (Platform.OS === "web" && PostHogJS) {
+        // Initialize PostHog for web
+        // Check if init method exists
+        if (typeof PostHogJS.init === "function") {
+          // posthog-js init method - returns void, client is accessed via PostHogJS
+          PostHogJS.init(key, {
+            api_host: apiHost,
+            autocapture: config?.captureClicks ?? true,
+            capture_pageview: config?.captureScreens ?? true,
+            loaded: (posthog: PostHogClient) => {
+              if (isPostHogClient(posthog)) {
+                this.client = posthog
+                this.initialized = true
+                if (__DEV__) {
+                  logger.debug("📊 [PostHog] Initialized for web")
+                }
+              }
+            },
+          })
+          // Set client to PostHogJS instance if callback hasn't fired yet
+          // posthog-js exposes itself as the client after init
+          if (!this.client && PostHogJS && isPostHogClient(PostHogJS)) {
+            this.client = PostHogJS
+            this.initialized = true
+            if (__DEV__) {
+              logger.debug("📊 [PostHog] Initialized for web")
+            }
+          }
+        } else {
+          // PostHogJS loaded but init method not found
+          // This might happen if the module structure is different
+          logger.error("PostHogJS.init is not a function. PostHogJS structure", {
+            keys: Object.keys(PostHogJS || {}),
+          })
+          // Try to use PostHogJS directly as the client if it has capture method
+          if (PostHogJS && isPostHogClient(PostHogJS)) {
+            this.client = PostHogJS
+            this.initialized = true
+            if (__DEV__) {
+              logger.warn("📊 [PostHog] Using PostHogJS directly (init method not found)")
+            }
+          }
+        }
+      } else if (PostHogRN) {
+        // Initialize PostHog for React Native
+        this.client = new PostHogRN(key, { host: apiHost })
+        this.initialized = true
+        if (__DEV__) {
+          logger.debug("📊 [PostHog] Initialized for mobile")
+        }
+      }
+    } catch (error) {
+      logger.error("Failed to initialize PostHog", {}, error as Error)
+    }
+  }
+
+  track(event: string, properties?: EventProperties): void {
+    if (!this.client) return
+
+    try {
+      if (Platform.OS === "web") {
+        this.client.capture(event, properties)
+      } else {
+        this.client.capture(event, properties)
+      }
+
+      if (__DEV__) {
+        logger.debug(`📊 [PostHog] Event: ${event}`, properties || {})
+      }
+    } catch (error) {
+      logger.error("PostHog track error", {}, error as Error)
+    }
+  }
+
+  screen(name: string, properties?: ScreenProperties): void {
+    if (!this.client) return
+
+    try {
+      if (Platform.OS === "web") {
+        this.client.capture("$pageview", {
+          $current_url: name,
+          ...properties,
+        })
+      } else {
+        this.client.screen?.(name, properties)
+      }
+
+      if (__DEV__) {
+        logger.debug(`📊 [PostHog] Screen: ${name}`, properties || {})
+      }
+    } catch (error) {
+      logger.error("PostHog screen error", {}, error as Error)
+    }
+  }
+
+  identify(userId: string, properties?: UserProperties): void {
+    if (!this.client) return
+
+    try {
+      this.client.identify(userId, properties)
+
+      if (__DEV__) {
+        logger.debug(`📊 [PostHog] Identify: ${userId}`, properties || {})
+      }
+    } catch (error) {
+      logger.error("PostHog identify error", {}, error as Error)
+    }
+  }
+
+  reset(): void {
+    if (!this.client) return
+
+    try {
+      this.client.reset()
+
+      if (__DEV__) {
+        logger.debug("📊 [PostHog] Reset user")
+      }
+    } catch (error) {
+      logger.error("PostHog reset error", {}, error as Error)
+    }
+  }
+
+  setUserProperties(properties: UserProperties): void {
+    if (!this.client) return
+
+    try {
+      // PostHog uses setPersonProperties for both web and mobile
+      this.client.setPersonProperties(properties)
+
+      if (__DEV__) {
+        logger.debug("📊 [PostHog] Set user properties", properties)
+      }
+    } catch (error) {
+      logger.error("PostHog setUserProperties error", {}, error as Error)
+    }
+  }
+
+  group(type: string, id: string, properties?: GroupProperties): void {
+    if (!this.client) return
+
+    try {
+      this.client.group(type, id, properties)
+
+      if (__DEV__) {
+        logger.debug(`📊 [PostHog] Group: ${type}:${id}`, properties || {})
+      }
+    } catch (error) {
+      logger.error("PostHog group error", {}, error as Error)
+    }
+  }
+
+  isFeatureEnabled(flag: string): boolean {
+    if (!this.client) return false
+
+    try {
+      return this.client.isFeatureEnabled(flag) ?? false
+    } catch (error) {
+      logger.error("PostHog isFeatureEnabled error", {}, error as Error)
+      return false
+    }
+  }
+
+  getFeatureFlag(flag: string): FeatureFlagValue | undefined {
+    if (!this.client) return undefined
+
+    try {
+      return this.client.getFeatureFlag(flag)
+    } catch (error) {
+      logger.error("PostHog getFeatureFlag error", {}, error as Error)
+      return undefined
+    }
+  }
+
+  onFeatureFlags(callback: (flags: Record<string, FeatureFlagValue>) => void): void {
+    if (!this.client) return
+
+    try {
+      this.client.onFeatureFlags?.(callback)
+    } catch (error) {
+      logger.error("PostHog onFeatureFlags error", {}, error as Error)
+    }
+  }
+
+  optIn(): void {
+    if (!this.client) return
+
+    try {
+      this.client.optIn()
+
+      if (__DEV__) {
+        logger.debug("📊 [PostHog] Opted in to tracking")
+      }
+    } catch (error) {
+      logger.error("PostHog optIn error", {}, error as Error)
+    }
+  }
+
+  optOut(): void {
+    if (!this.client) return
+
+    try {
+      this.client.optOut()
+
+      if (__DEV__) {
+        logger.debug("📊 [PostHog] Opted out of tracking")
+      }
+    } catch (error) {
+      logger.error("PostHog optOut error", {}, error as Error)
+    }
+  }
+
+  async flush(): Promise<void> {
+    if (!this.client) return
+
+    try {
+      await this.client.flush?.()
+
+      if (__DEV__) {
+        logger.debug("📊 [PostHog] Flushed events")
+      }
+    } catch (error) {
+      logger.error("PostHog flush error", {}, error as Error)
+    }
+  }
+
+  async shutdown(): Promise<void> {
+    if (!this.client) return
+
+    try {
+      await this.client.shutdown?.()
+      this.initialized = false
+
+      if (__DEV__) {
+        logger.debug("📊 [PostHog] Shutdown")
+      }
+    } catch (error) {
+      logger.error("PostHog shutdown error", {}, error as Error)
+    }
+  }
+}
+
+// Export singleton instance
+export const posthog: AnalyticsService = useMock
+  ? new MockPostHog({ apiKey: "mock-key", host })
+  : new PostHogService()
+
+// Export initialization function
+export const initPosthog = async () => {
+  if (useMock) {
+    if (__DEV__) {
+      logger.warn("⚠️  PostHog API key not found - using mock analytics")
+      logger.info("💡 Add EXPO_PUBLIC_POSTHOG_API_KEY to .env to use real PostHog")
+    }
+    return
+  }
+
+  await posthog.initialize({ apiKey, host })
+
+  // Log mock mode status during initialization (when logger is ready)
+  if (useMock && __DEV__) {
+    logger.warn("⚠️  PostHog running in mock mode")
+  }
+}

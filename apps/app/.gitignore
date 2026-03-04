@@ -1,0 +1,119 @@
+# OSX
+.DS_Store
+
+# Xcode
+build/
+*.pbxuser
+!default.pbxuser
+*.mode1v3
+!default.mode1v3
+*.mode2v3
+!default.mode2v3
+*.perspectivev3
+!default.perspectivev3
+xcuserdata/
+*.xccheckout
+*.moved-aside
+DerivedData/
+*.hmap
+*.ipa
+*.xcuserstate
+ios/.xcode.env.local
+
+# Android/IntelliJ
+build/
+.idea/
+.gradle/
+local.properties
+*.iml
+*.hprof
+.cxx/
+
+# Node.js
+node_modules/
+npm-debug.log
+yarn-error.log
+yarn-debug.log
+.pnp
+.pnp.js
+
+# BUCK
+buck-out/
+\.buckd/
+*.keystore
+!debug.keystore
+
+# fastlane
+**/fastlane/report.xml
+**/fastlane/Preview.html
+**/fastlane/screenshots
+**/fastlane/test_output
+
+# Bundle artifacts
+*.jsbundle
+
+# VS Code
+.vscode/
+!.vscode/extensions.json
+
+# Expo
+.expo/
+.expo-shared/
+bin/Exponent.app
+/android
+/ios
+expo-env.d.ts
+web-build/
+
+# Secrets & Certificates
+npm-debug.*
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+*.orig.*
+*.pem
+*.cert
+*.crt
+
+# Environment variables
+.env
+.env.*
+!.env.example
+
+# Configurations (keep env.js template if needed)
+# !env.js
+
+# Coverage
+/coverage
+*.lcov
+
+# Yarn
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
+
+# Dependency Graph Visualizations
+app-dependency-graph.svg
+app-dependency-graph.png
+
+# TypeScript
+*.tsbuildinfo
+
+# EAS
+.eas/
+eas-build-*.json
+
+# Metro bundler
+.metro/
+metro-*.log
+
+# Temporary files
+*.tmp
+*.temp
+.cache/
+.temp/

@@ -30,14 +30,14 @@ export type AppStackParamList = {
   MagicLink: undefined
   OTPVerification: { email: string; isConvex?: boolean }
   AuthCallback:
-    | {
-        code?: string
-        access_token?: string
-        refresh_token?: string
-        state?: string
-        type?: string
-      }
-    | undefined
+  | {
+    code?: string
+    access_token?: string
+    refresh_token?: string
+    state?: string
+    type?: string
+  }
+  | undefined
   Starter: undefined
   Paywall: PaywallParams | undefined
   Profile: undefined
@@ -45,6 +45,8 @@ export type AppStackParamList = {
   ComponentShowcase: undefined
   DataDemo: undefined
   Main: NavigatorScreenParams<MainTabParamList>
+  Challenge: undefined
+  AppSelection: undefined
   // 🔥 Your screens go here
   // SHIPNATIVE_GENERATOR_ANCHOR_APP_STACK_PARAM_LIST
 }
@@ -61,4 +63,4 @@ export type MainTabScreenProps<T extends keyof MainTabParamList> = CompositeScre
 
 export interface NavigationProps extends Partial<
   ComponentProps<typeof NavigationContainer<AppStackParamList>>
-> {}
+> { }

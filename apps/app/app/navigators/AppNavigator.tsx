@@ -176,6 +176,21 @@ const AppStack = () => {
               animation: "slide_from_right",
             }}
           />
+          <Stack.Screen
+            name="Challenge"
+            component={Screens.ChallengeScreen}
+            options={{
+              animation: "slide_from_bottom",
+              gestureEnabled: false,
+            }}
+          />
+          <Stack.Screen
+            name="AppSelection"
+            component={Screens.AppSelectionScreen}
+            options={{
+              animation: "slide_from_right",
+            }}
+          />
         </>
       ) : (
         // ------------------------------------------------------------------

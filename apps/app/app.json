@@ -1,7 +1,7 @@
 {
-  "name": "reactnativestarterkit",
-  "slug": "reactnativestarterkit",
-  "scheme": "shipnative",
+  "name": "Burpeesy",
+  "slug": "burpeesy",
+  "scheme": "burpeesy",
   "entryPoint": "./index.tsx",
   "version": "1.0.0",
   "orientation": "portrait",
@@ -17,7 +17,7 @@
   ],
   "android": {
     "icon": "./assets/images/app-icon-android-legacy.png",
-    "package": "com.reactnativestarterkit",
+    "package": "com.georgh.burpeesy",
     "adaptiveIcon": {
       "foregroundImage": "./assets/images/app-icon-android-adaptive-foreground.png",
       "backgroundImage": "./assets/images/app-icon-android-adaptive-background.png"
@@ -36,7 +36,7 @@
   "ios": {
     "icon": "./assets/images/app-icon-ios.png",
     "supportsTablet": true,
-    "bundleIdentifier": "com.reactnativestarterkit",
+    "bundleIdentifier": "com.georgh.burpeesy",
     "infoPlist": {
       "UIViewControllerBasedStatusBarAppearance": true,
       "UIBackgroundModes": [
@@ -99,6 +99,13 @@
         "icon": "./assets/images/notification-icon.png",
         "color": "#000000",
         "sounds": []
+      }
+    ],
+    [
+      "react-native-vision-camera",
+      {
+        "cameraPermissionText": "This app needs access to your camera to verify your burpees.",
+        "enableMicrophonePermission": false
       }
     ],
     "expo-build-properties"

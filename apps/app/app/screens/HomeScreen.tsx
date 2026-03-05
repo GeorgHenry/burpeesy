@@ -10,7 +10,6 @@ import { Text, Avatar, Badge, PressableCard } from "@/components"
 import { ANIMATION } from "@/config/constants"
 import { useAuth } from "@/hooks"
 import type { MainTabScreenProps } from "@/navigators/navigationTypes"
-import { useNotificationStore } from "@/stores"
 import { webDimension } from "@/types/webStyles"
 import { haptics } from "@/utils/haptics"
 
@@ -18,7 +17,7 @@ import { haptics } from "@/utils/haptics"
 // TYPES
 // =============================================================================
 
-interface HomeScreenProps extends MainTabScreenProps<"Home"> {}
+interface HomeScreenProps extends MainTabScreenProps<"Home"> { }
 
 // =============================================================================
 // CONSTANTS
@@ -27,7 +26,6 @@ interface HomeScreenProps extends MainTabScreenProps<"Home"> {}
 const isWeb = Platform.OS === "web"
 const CONTENT_MAX_WIDTH = 800
 
-// Spring config for animations
 // =============================================================================
 // COMPONENT
 // =============================================================================
@@ -36,31 +34,30 @@ export const HomeScreen: FC<HomeScreenProps> = function HomeScreen(_props) {
   const { navigation } = _props
   const { theme } = useUnistyles()
   const { user } = useAuth()
-  const isPushEnabled = useNotificationStore((state) => state.isPushEnabled)
-  const togglePush = useNotificationStore((state) => state.togglePush)
   const insets = useSafeAreaInsets()
   const { width: windowWidth } = useWindowDimensions()
 
   const isLargeScreen = windowWidth > 768
   const contentStyle = isLargeScreen
     ? {
-        maxWidth: CONTENT_MAX_WIDTH,
-        alignSelf: "center" as const,
-        width: webDimension("100%"),
-      }
+      maxWidth: CONTENT_MAX_WIDTH,
+      alignSelf: "center" as const,
+      width: webDimension("100%"),
+    }
     : {}
 
-  const handleNavigateToComponents = () => {
-    navigation.navigate("Components")
+  const handleNavigateToChallenge = () => {
+    haptics.buttonPress()
+    navigation.navigate("Challenge" as any)
   }
 
-  const handleTogglePush = () => {
-    haptics.switchChange()
-    togglePush()
+  const handleNavigateToAppSelection = () => {
+    haptics.buttonPress()
+    navigation.navigate("AppSelection" as any)
   }
 
   // Use unified user object from useAuth
-  const userName = user?.displayName ?? user?.email?.split("@")[0] ?? "User"
+  const userName = user?.displayName ?? user?.email?.split("@")[0] ?? "Athlete"
   const userInitials = userName.slice(0, 2).toUpperCase()
   const avatarUrl = user?.avatarUrl ?? undefined
 
@@ -90,31 +87,35 @@ export const HomeScreen: FC<HomeScreenProps> = function HomeScreen(_props) {
                 size="md"
               />
               <View style={styles.headerText}>
-                <Text size="sm" color="secondary" tx="homeScreen:goodMorning" />
+                <Text size="sm" color="secondary">
+                  Welcome back
+                </Text>
                 <Text size="xl" weight="bold">
                   {userName}
                 </Text>
               </View>
             </View>
-            <Pressable style={styles.notificationButton} onPress={handleTogglePush}>
-              <Ionicons
-                name={isPushEnabled ? "notifications" : "notifications-off-outline"}
-                size={24}
-                color={theme.colors.foreground}
-              />
-              {isPushEnabled && <Badge dot variant="error" size="sm" />}
+            <Pressable
+              style={styles.settingsButton}
+              onPress={() => navigation.navigate("Profile")}
+            >
+              <Ionicons name="settings-outline" size={24} color={theme.colors.foreground} />
             </Pressable>
           </Animated.View>
 
-          {/* Featured Card */}
-          <PressableCard style={styles.featuredCard} delay={ANIMATION.STAGGER_DELAY}>
+          {/* Featured Challenge Card */}
+          <PressableCard
+            style={styles.featuredCard}
+            delay={ANIMATION.STAGGER_DELAY}
+            onPress={handleNavigateToChallenge}
+          >
             <View style={styles.featuredContent}>
-              <Badge tx="homeScreen:dailyChallenge" variant="info" size="sm" />
+              <Badge text="Ready to Unlock" variant="info" size="sm" />
               <View style={styles.titleRow}>
                 <View style={styles.featuredIconBox}>
                   <Ionicons
-                    name="flower-outline"
-                    size={24}
+                    name="fitness-outline"
+                    size={28}
                     color={theme.colors.palette.primary600}
                   />
                 </View>
@@ -122,16 +123,23 @@ export const HomeScreen: FC<HomeScreenProps> = function HomeScreen(_props) {
                   size="2xl"
                   weight="bold"
                   style={styles.featuredTitle}
-                  tx="homeScreen:featuredTitle"
-                />
+                >
+                  Do Your Burpees!
+                </Text>
               </View>
               <Text
                 color="secondary"
                 style={styles.featuredSubtitle}
-                tx="homeScreen:featuredSubtitle"
-              />
-              <Pressable style={styles.startButton} onPress={() => haptics.buttonPress()}>
-                <Text weight="semiBold" style={styles.startButtonText} tx="homeScreen:startNow" />
+              >
+                Complete 5 burpees to unlock your locked apps. The camera will verify your form.
+              </Text>
+              <Pressable
+                style={styles.startButton}
+                onPress={handleNavigateToChallenge}
+              >
+                <Text weight="semiBold" style={styles.startButtonText}>
+                  Start Challenge
+                </Text>
                 <Ionicons name="play-circle" size={22} color={theme.colors.card} />
               </Pressable>
             </View>
@@ -148,9 +156,11 @@ export const HomeScreen: FC<HomeScreenProps> = function HomeScreen(_props) {
                 <Ionicons name="flame-outline" size={18} color={theme.colors.palette.accent500} />
               </View>
               <Text size="2xl" weight="bold">
-                12
+                0
               </Text>
-              <Text size="xs" color="secondary" tx="homeScreen:statStreak" />
+              <Text size="xs" color="secondary">
+                Day Streak
+              </Text>
             </PressableCard>
             <PressableCard
               style={styles.statCard}
@@ -158,12 +168,18 @@ export const HomeScreen: FC<HomeScreenProps> = function HomeScreen(_props) {
               delay={ANIMATION.STAGGER_DELAY * 2.5}
             >
               <View style={styles.statIconBox}>
-                <Ionicons name="checkmark-circle-outline" size={18} color={theme.colors.success} />
+                <Ionicons
+                  name="barbell-outline"
+                  size={18}
+                  color={theme.colors.success}
+                />
               </View>
               <Text size="2xl" weight="bold">
-                85%
+                0
               </Text>
-              <Text size="xs" color="secondary" tx="homeScreen:statCompleted" />
+              <Text size="xs" color="secondary">
+                Burpees Done
+              </Text>
             </PressableCard>
             <PressableCard
               style={styles.statCard}
@@ -171,23 +187,27 @@ export const HomeScreen: FC<HomeScreenProps> = function HomeScreen(_props) {
               delay={ANIMATION.STAGGER_DELAY * 3}
             >
               <View style={styles.statIconBox}>
-                <Ionicons name="star-outline" size={18} color={theme.colors.warning} />
+                <Ionicons name="lock-closed-outline" size={18} color={theme.colors.warning} />
               </View>
               <Text size="2xl" weight="bold">
-                4.8
+                0
               </Text>
-              <Text size="xs" color="secondary" tx="homeScreen:statRating" />
+              <Text size="xs" color="secondary">
+                Apps Locked
+              </Text>
             </PressableCard>
           </View>
 
           {/* Quick Actions */}
           <Animated.View entering={FadeInDown.delay(ANIMATION.STAGGER_DELAY * 3.5).springify()}>
-            <Text size="xl" weight="bold" style={styles.sectionTitle} tx="homeScreen:explore" />
+            <Text size="xl" weight="bold" style={styles.sectionTitle}>
+              Manage
+            </Text>
           </Animated.View>
 
           <PressableCard
             style={styles.actionCard}
-            onPress={handleNavigateToComponents}
+            onPress={handleNavigateToAppSelection}
             delay={ANIMATION.STAGGER_DELAY * 4}
           >
             <View style={styles.actionContent}>
@@ -195,16 +215,49 @@ export const HomeScreen: FC<HomeScreenProps> = function HomeScreen(_props) {
                 <View
                   style={[styles.iconBox, { backgroundColor: theme.colors.palette.primary100 }]}
                 >
-                  <Ionicons name="cube-outline" size={24} color={theme.colors.palette.primary600} />
+                  <Ionicons
+                    name="apps-outline"
+                    size={24}
+                    color={theme.colors.palette.primary600}
+                  />
                 </View>
-                <Text weight="semiBold" style={styles.actionTitle} tx="homeScreen:uiComponents" />
+                <Text weight="semiBold" style={styles.actionTitle}>
+                  Lock Apps
+                </Text>
               </View>
-              <Text
-                size="sm"
-                color="secondary"
-                style={styles.actionDescription}
-                tx="homeScreen:uiComponentsDescription"
-              />
+              <Text size="sm" color="secondary" style={styles.actionDescription}>
+                Choose which apps require burpees before opening
+              </Text>
+            </View>
+            <Ionicons name="chevron-forward" size={20} color={theme.colors.foregroundTertiary} />
+          </PressableCard>
+
+          <PressableCard
+            style={styles.actionCard}
+            onPress={handleNavigateToChallenge}
+            delay={ANIMATION.STAGGER_DELAY * 4.5}
+          >
+            <View style={styles.actionContent}>
+              <View style={styles.actionTitleRow}>
+                <View
+                  style={[
+                    styles.iconBox,
+                    { backgroundColor: theme.colors.palette.secondary100 },
+                  ]}
+                >
+                  <Ionicons
+                    name="videocam-outline"
+                    size={24}
+                    color={theme.colors.palette.secondary600}
+                  />
+                </View>
+                <Text weight="semiBold" style={styles.actionTitle}>
+                  Quick Workout
+                </Text>
+              </View>
+              <Text size="sm" color="secondary" style={styles.actionDescription}>
+                Do a quick burpee session with AI verification
+              </Text>
             </View>
             <Ionicons name="chevron-forward" size={20} color={theme.colors.foregroundTertiary} />
           </PressableCard>
@@ -212,53 +265,26 @@ export const HomeScreen: FC<HomeScreenProps> = function HomeScreen(_props) {
           <PressableCard
             style={styles.actionCard}
             onPress={() => navigation.navigate("Profile")}
-            delay={ANIMATION.STAGGER_DELAY * 4.5}
-          >
-            <View style={styles.actionContent}>
-              <View style={styles.actionTitleRow}>
-                <View
-                  style={[styles.iconBox, { backgroundColor: theme.colors.palette.secondary100 }]}
-                >
-                  <Ionicons
-                    name="person-outline"
-                    size={24}
-                    color={theme.colors.palette.secondary600}
-                  />
-                </View>
-                <Text weight="semiBold" style={styles.actionTitle} tx="homeScreen:myProfile" />
-              </View>
-              <Text
-                size="sm"
-                color="secondary"
-                style={styles.actionDescription}
-                tx="homeScreen:myProfileDescription"
-              />
-            </View>
-            <Ionicons name="chevron-forward" size={20} color={theme.colors.foregroundTertiary} />
-          </PressableCard>
-
-          <PressableCard
-            style={styles.actionCard}
-            onPress={() => navigation.navigate("Paywall")}
             delay={ANIMATION.STAGGER_DELAY * 5}
           >
             <View style={styles.actionContent}>
               <View style={styles.actionTitleRow}>
-                <View style={[styles.iconBox, { backgroundColor: theme.colors.palette.accent100 }]}>
-                  <Ionicons name="star-outline" size={24} color={theme.colors.palette.accent600} />
+                <View
+                  style={[styles.iconBox, { backgroundColor: theme.colors.palette.accent100 }]}
+                >
+                  <Ionicons
+                    name="trophy-outline"
+                    size={24}
+                    color={theme.colors.palette.accent600}
+                  />
                 </View>
-                <Text
-                  weight="semiBold"
-                  style={styles.actionTitle}
-                  tx="homeScreen:premiumFeatures"
-                />
+                <Text weight="semiBold" style={styles.actionTitle}>
+                  Your Progress
+                </Text>
               </View>
-              <Text
-                size="sm"
-                color="secondary"
-                style={styles.actionDescription}
-                tx="homeScreen:premiumFeaturesDescription"
-              />
+              <Text size="sm" color="secondary" style={styles.actionDescription}>
+                View stats, streaks, and workout history
+              </Text>
             </View>
             <Ionicons name="chevron-forward" size={20} color={theme.colors.foregroundTertiary} />
           </PressableCard>
@@ -312,7 +338,7 @@ const styles = StyleSheet.create((theme) => ({
   headerText: {
     gap: 2,
   },
-  notificationButton: {
+  settingsButton: {
     width: 44,
     height: 44,
     borderRadius: theme.radius.full,
@@ -340,8 +366,8 @@ const styles = StyleSheet.create((theme) => ({
     marginTop: theme.spacing.xs,
   },
   featuredIconBox: {
-    width: 44,
-    height: 44,
+    width: 48,
+    height: 48,
     borderRadius: theme.radius.lg,
     backgroundColor: theme.colors.palette.primary100,
     alignItems: "center",

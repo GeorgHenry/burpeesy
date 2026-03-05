@@ -39,7 +39,7 @@ const TAB_CONFIG: Record<
   }
 > = {
   Home: { icon: "home", iconOutline: "home-outline", labelTx: "tabs:home" },
-  Components: { icon: "cube", iconOutline: "cube-outline", labelTx: "tabs:components" },
+  Components: { icon: "fitness", iconOutline: "fitness-outline", labelTx: "tabs:components" },
   Paywall: { icon: "diamond", iconOutline: "diamond-outline", labelTx: "tabs:pro" },
   Profile: { icon: "person", iconOutline: "person-outline", labelTx: "tabs:profile" },
 }
@@ -256,9 +256,9 @@ function DesktopSidebar({ state, navigation }: BottomTabBarProps) {
       {/* Logo / Brand */}
       <View style={styles.sidebarHeader}>
         <View style={styles.logoContainer}>
-          <Ionicons name="rocket" size={28} color={theme.colors.primary} />
+          <Ionicons name="barbell" size={28} color={theme.colors.primary} />
         </View>
-        <Animated.Text style={styles.brandText}>Shipnative</Animated.Text>
+        <Animated.Text style={styles.brandText}>Burpeesy</Animated.Text>
       </View>
 
       {/* Navigation Items */}
